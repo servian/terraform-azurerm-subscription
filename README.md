@@ -1,14 +1,12 @@
-## Requirements
+## Additional Requirements
 
-The following requirements are needed by this module:
+### Required Permissions
 
-- terraform (>= 0.13)
-- azurerm (~> 2.19)
-- shell (~>1.7)
+The user or service principal executing this module requires the ability to create subscriptions against an Azure Enrollment Account (`Owner` role). See the [Azure Documentation](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/grant-access-to-create-subscription?#grant-access) for how to grant this.
 
-As this module uses the Az PowerShell commands it requires you set the azurerm provider config using environment variables so it can authenticate.
+### PowerShell Dependencies
 
-Additional PowerShell Requirements:
+As this module uses the Az PowerShell commands it requires that the azurerm provider config is set using environment variables so it can authenticate. These modules are required to be installed on the deployment agent:
 
 - PowerShell Core (~>7.0)
 - PS Module: Az (~>4.5)
@@ -19,36 +17,12 @@ Additional PowerShell Requirements:
 Install-Module @("Az", "Az.Accounts", "Az.Subscription")
 ```
 
-## Providers
+## Usage Example
 
-The following providers are used by this module:
-
-- azurerm (~> 2.19)
-- shell (~>1.7)
-
-## Required Inputs
-
-The following input variables are required:
-
-### name
-
-Description: Subscription name
-
-Type: `string`
-
-## Optional Inputs
-
-The following input variables are optional (have default values):
-
-### type
-
-Description: Prod or DevTest
-
-Type: `string`
-
-Default: `"Prod"`
-
-## Outputs
-
-No output.
-
+```hcl
+module "subscription" {
+  source  = "servian/subscription/azurerm"
+  name    = "My Subscription"
+  type    = "Prod"
+}
+```

@@ -1,11 +1,11 @@
 variable "name" {
   type        = string
-  description = "Subscription name"
+  description = "Subscription name, can be changed later without recreating the subscription."
 }
 
 variable "type" {
   type        = string
-  description = "Prod or DevTest"
+  description = "Subscription offer types 'Prod' or 'DevTest', 'DevTest' must first be enabled at the enrollment account, otherwise will fail."
   default     = "Prod"
   validation {
     condition     = contains(["Prod", "DevTest"], var.type)

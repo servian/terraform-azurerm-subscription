@@ -24,7 +24,7 @@ resource "shell_script" "subscription" {
   }
 }
 
-resource "azurerm_role_assignment" "test" {
+resource "azurerm_role_assignment" "owners" {
   for_each             = toset(var.principal_ids)
   scope                = "/subscriptions/${shell_script.subscription.output.id}"
   role_definition_name = "Owner"
