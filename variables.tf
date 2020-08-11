@@ -16,4 +16,5 @@ variable "type" {
 variable "principal_ids" {
   type        = list(string)
   description = "List of principal_ids to give the owner role on this subscription."
+  default     = []
 }
