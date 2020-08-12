@@ -5,8 +5,6 @@ locals {
   }
 }
 
-data "azurerm_client_config" "current" {}
-
 # Note that the subscription cannot be programmatically deleted, 
 # it is just removed from Terraform's state file
 resource "shell_script" "subscription" {
@@ -19,14 +17,16 @@ resource "shell_script" "subscription" {
   }
   environment = {
     name   = var.name
-    tenant = data.azurerm_client_config.current.tenant_id
+    tenant = var.tenant_id
     type   = local.type_codes[var.type]
   }
 }
 
+data "azurerm_client_config" "current" {}
+
 resource "azurerm_role_assignment" "owners" {
   for_each             = toset(var.principal_ids)
-  scope                = "/subscriptions/${shell_script.subscription.output.id}"
+  scope                = "/subscriptions/${data.azurerm_client_config.current.subscription_id}"
   role_definition_name = "Owner"
   principal_id         = each.key
 }

@@ -7,7 +7,7 @@
 # - $env:type - string, either "MS-AZR-0148P" (dev/test) or "MS-AZR-0017P" (normal/prod)
 #
 
-$credential = New-Object System.Management.Automation.PSCredential ($env:ARM_CLIENT_ID, (ConvertTo-SecureString $env:ARM_CLIENT_SECRET -AsPlainText -Force))
+$credential = New-Object System.Management.Automation.PSCredential ($env:azsub_client_id, (ConvertTo-SecureString $env:azsub_client_secret -AsPlainText -Force))
 Connect-AzAccount -Credential $credential -Tenant $env:tenant -ServicePrincipal
 
 $ErrorActionPreference = 'Stop'
