@@ -23,10 +23,10 @@ Install-Module @("Az", "Az.Accounts", "Az.Subscription")
 
 ```hcl
 module "subscription" {
-  source  = "servian/subscription/azurerm"
-  name    = "My Subscription"
-  tenant_id = "00000000-0000-0000-0000-000000000000"
-  client_id = "00000000-0000-0000-0000-000000000000"
+  source        = "servian/subscription/azurerm"
+  name          = "My Subscription"
+  tenant_id     = "00000000-0000-0000-0000-000000000000"
+  client_id     = "00000000-0000-0000-0000-000000000000"
   client_secret = "super-S3cr37!"
 }
 ```
