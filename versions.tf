@@ -11,8 +11,17 @@ terraform {
 
 provider "azurerm" {
   features {}
+  subscription_id = shell_script.subscription.output.id
+  client_id       = var.client_id
+  client_secret   = var.client_secret
+  tenant_id       = var.tenant_id
 }
 
 provider "shell" {
   interpreter = ["pwsh", "-command"]
+
+  sensitive_environment = {
+    azsub_client_id     = var.client_id
+    azsub_client_secret = var.client_secret
+  }
 }
