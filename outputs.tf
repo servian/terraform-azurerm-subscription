@@ -7,3 +7,8 @@ output "id" {
   value       = "/subscriptions/${shell_script.subscription.output.id}"
   description = "Azure resource model subscription path"
 }
+
+output "name" {
+  value       = shell_script.subscription.output.name
+  description = "Name of the subscription"
+}
