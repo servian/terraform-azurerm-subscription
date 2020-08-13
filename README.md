@@ -2,6 +2,12 @@
 
 ## Additional Requirements
 
+### Provider Dependency
+
+This module is dependent on having a valid azurerm provider block with config set using environment variables `ARM_CLIENT_ID`, `ARM_CLIENT_SECRET`, `ARM_TENANT_ID` and `ARM_SUBSCRIPTION_ID`.
+
+> Having to set a subscription to create a subscription is illogical. It is only required as it is a limitation of the `azurerm` provider to have a valid pre-existing subscription set at plan time.
+
 ### Required Permissions
 
 The user or service principal executing this module requires the ability to create subscriptions with an Azure Enrollment Account (with the `Owner` role). See the [Azure Documentation](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/grant-access-to-create-subscription?#grant-access) for how to grant this.
@@ -22,16 +28,8 @@ Install-Module @("Az", "Az.Accounts", "Az.Subscription")
 ## Usage Example
 
 ```hcl
-# the azure config can be retrieved from local env variables if provided via that mechanism
-data "external" "az_client_config" {
-  program = ["pwsh", "-command", "@{tenant=$env:ARM_TENANT_ID;client=$env:ARM_CLIENT_ID;secret=$env:ARM_CLIENT_SECRET} | ConvertTo-Json | Write-Output"]
-}
-
 module "subscription" {
-  source        = "servian/subscription/azurerm"
-  name          = "My New Subscription"
-  tenant_id     = data.external.az_client_config.result.tenant
-  client_id     = data.external.az_client_config.result.client
-  client_secret = data.external.az_client_config.result.secret
+  source  = "servian/subscription/azurerm"
+  name    = "My New Subscription"
 }
 ```
