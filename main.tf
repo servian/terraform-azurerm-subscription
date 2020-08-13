@@ -16,17 +16,7 @@ resource "shell_script" "subscription" {
     delete = ". ./subscription.ps1; Delete"
   }
   environment = {
-    name   = var.name
-    tenant = var.tenant_id
-    type   = local.type_codes[var.type]
+    name = var.name
+    type = local.type_codes[var.type]
   }
-}
-
-data "azurerm_client_config" "current" {}
-
-resource "azurerm_role_assignment" "owners" {
-  for_each             = toset(var.principal_ids)
-  scope                = "/subscriptions/${data.azurerm_client_config.current.subscription_id}"
-  role_definition_name = "Owner"
-  principal_id         = each.key
 }

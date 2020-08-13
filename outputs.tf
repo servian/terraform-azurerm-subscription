@@ -1,14 +1,18 @@
+data "azurerm_subscription" "main" {
+  subscription_id = shell_script.subscription.output.id
+}
+
 output "subscription_id" {
-  value       = shell_script.subscription.output.id
+  value       = data.azurerm_subscription.main.subscription_id
   description = "Subscription ID GUID"
 }
 
 output "id" {
-  value       = "/subscriptions/${shell_script.subscription.output.id}"
+  value       = data.azurerm_subscription.main.id
   description = "Azure resource model subscription path"
 }
 
 output "name" {
-  value       = shell_script.subscription.output.name
+  value       = data.azurerm_subscription.main.display_name
   description = "Name of the subscription"
 }

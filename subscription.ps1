@@ -2,17 +2,16 @@
 # CRUD an Azure Subscription
 # 
 # Requires the following environment variables:
-# - $env:tenant
 # - $env:name
 # - $env:type - string, either "MS-AZR-0148P" (dev/test) or "MS-AZR-0017P" (normal/prod)
 #
 
 $credential = New-Object System.Management.Automation.PSCredential ($env:azsub_client_id, (ConvertTo-SecureString $env:azsub_client_secret -AsPlainText -Force))
-Connect-AzAccount -Credential $credential -Tenant $env:tenant -ServicePrincipal
+Connect-AzAccount -Credential $credential -Tenant $env:azsub_tenant_id -ServicePrincipal
 
 $ErrorActionPreference = 'Stop'
 $old_state = [System.IO.File]::OpenText("/dev/stdin").ReadToEnd() | ConvertFrom-Json
-if($null -ne $old_state) {
+if ($null -ne $old_state) {
     Write-Output "Old state:"
     $old_state | ConvertTo-Json | Write-Output
 }
@@ -21,7 +20,7 @@ function Create {
 
     # Check if subscription name already used in this tenant
     Write-Output "Checking for existing subscription with name $env:name..."
-    $subscription = Get-AzSubscription -TenantId $env:tenant -SubscriptionName $env:name -ErrorAction SilentlyContinue
+    $subscription = Get-AzSubscription -TenantId $env:azsub_tenant_id -SubscriptionName $env:name -ErrorAction SilentlyContinue
     $subscription | ConvertTo-Json | Write-Output
 
     # Create new subscription
@@ -31,7 +30,7 @@ function Create {
         $account | ConvertTo-Json | Write-Output
         Write-Output "Creating subscription..."
         try {
-        $subscription = New-AzSubscription -OfferType $env:type -Name $env:name -EnrollmentAccountObjectId $account[0].ObjectId -ErrorAction Stop
+            $subscription = New-AzSubscription -OfferType $env:type -Name $env:name -EnrollmentAccountObjectId $account[0].ObjectId -ErrorAction Stop
         }
         catch {
             Write-Error "Error: Error when attempting to update subscription name: $($_.Exception.Response)"
@@ -46,16 +45,16 @@ function Create {
     }
 
     # Emit refreshed state
-    @{ id = $subscription.Id; tenant = $subscription.TenantId; name = $subscription.Name } | ConvertTo-Json | Write-Output
+    @{ id = $subscription.Id; name = $subscription.Name } | ConvertTo-Json | Write-Output
 
     
 }
 
 function Read {
-    $subscription = Get-AzSubscription -TenantId $old_state.tenant -SubscriptionId $old_state.id -ErrorAction Stop
+    $subscription = Get-AzSubscription -TenantId $env:azsub_tenant_id -SubscriptionId $old_state.id -ErrorAction Stop
 
     # Emit refreshed state
-    @{ id = $subscription.Id; tenant = $subscription.TenantId; name = $subscription.Name } | ConvertTo-Json | Write-Output
+    @{ id = $subscription.Id; name = $subscription.Name } | ConvertTo-Json | Write-Output
 }
 
 function Update {
@@ -86,7 +85,7 @@ function Update {
      
     # Emit refreshed state
     Write-Host "New state:"
-    @{ id = $old_state.id; tenant = $env:tenant; name = $env:name } | ConvertTo-Json | Write-Output
+    @{ id = $old_state.id; name = $env:name } | ConvertTo-Json | Write-Output
 }
 
 function Delete {
