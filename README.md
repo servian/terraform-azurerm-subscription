@@ -22,11 +22,16 @@ Install-Module @("Az", "Az.Accounts", "Az.Subscription")
 ## Usage Example
 
 ```hcl
+# the azure config can be retrieved from local env variables if provided via that mechanism
+data "external" "az_client_config" {
+  program = ["pwsh", "-command", "\"@{tenant='$env:ARM_TENANT_ID';client='$env:ARM_CLIENT_ID';secret='$env:ARM_CLIENT_SECRET'} | ConvertTo-Json | Write-Output\""]
+}
+
 module "subscription" {
   source        = "servian/subscription/azurerm"
-  name          = "My Subscription"
-  tenant_id     = "00000000-0000-0000-0000-000000000000"
-  client_id     = "00000000-0000-0000-0000-000000000000"
-  client_secret = "super-S3cr37!"
+  name          = "SaaS Platform - ${var.name}"
+  tenant_id     = data.external.az_client_config.result.tenant
+  client_id     = data.external.az_client_config.result.client
+  client_secret = data.external.az_client_config.result.secret
 }
 ```
