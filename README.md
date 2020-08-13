@@ -29,7 +29,7 @@ data "external" "az_client_config" {
 
 module "subscription" {
   source        = "servian/subscription/azurerm"
-  name          = "SaaS Platform - ${var.name}"
+  name          = "My New Subscription"
   tenant_id     = data.external.az_client_config.result.tenant
   client_id     = data.external.az_client_config.result.client
   client_secret = data.external.az_client_config.result.secret
