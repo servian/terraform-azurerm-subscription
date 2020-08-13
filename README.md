@@ -24,7 +24,7 @@ Install-Module @("Az", "Az.Accounts", "Az.Subscription")
 ```hcl
 # the azure config can be retrieved from local env variables if provided via that mechanism
 data "external" "az_client_config" {
-  program = ["pwsh", "-command", "\"@{tenant='$env:ARM_TENANT_ID';client='$env:ARM_CLIENT_ID';secret='$env:ARM_CLIENT_SECRET'} | ConvertTo-Json | Write-Output\""]
+  program = ["pwsh", "-command", "@{tenant=$env:ARM_TENANT_ID;client=$env:ARM_CLIENT_ID;secret=$env:ARM_CLIENT_SECRET} | ConvertTo-Json | Write-Output"]
 }
 
 module "subscription" {
