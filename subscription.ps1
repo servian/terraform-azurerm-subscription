@@ -6,7 +6,13 @@
 # - $env:type - string, either "MS-AZR-0148P" (dev/test) or "MS-AZR-0017P" (normal/prod)
 #
 
-$credential = New-Object System.Management.Automation.PSCredential ($env:azsub_client_id, (ConvertTo-SecureString $env:azsub_client_secret -AsPlainText -Force))
+Test-Path $env:azsub_client_id
+Test-Path $env:azsub_client_secret
+Test-Path $env:azsub_tenant_id
+
+$username = $env:azsub_client_id
+$password = ConvertTo-SecureString $env:azsub_client_secret -AsPlainText -Force
+$credential = New-Object System.Management.Automation.PSCredential -ArgumentList $username, $password
 Connect-AzAccount -Credential $credential -Tenant $env:azsub_tenant_id -ServicePrincipal
 
 $ErrorActionPreference = 'Stop'
@@ -44,10 +50,30 @@ function Create {
         exit 1
     }
 
+    $consistent = $false
+    $loops = 0
+
+    while (-not $consistent) {
+        $subscription = $null
+        try {
+            $subscription = Get-AzSubscription -TenantId $env:azsub_tenant_id -SubscriptionName $env:name
+        }
+        catch {
+            $subscription = $null
+            if ($loops -eq 30) {
+                throw "Took too long for subscription to become consistent."
+            }
+            Write-Output "Loop: $loops"
+            Start-Sleep -Seconds 1
+        }
+        if ($null -ne $subscription) {
+            $consistent = $true
+        }
+        $loops++
+    }
+
     # Emit refreshed state
     @{ id = $subscription.Id; name = $subscription.Name } | ConvertTo-Json | Write-Output
-
-    
 }
 
 function Read {
